@@ -30,3 +30,11 @@ The model is trained on the following features:
 2. Install the required libraries:
    ```bash
    pip install pandas numpy scikit-learn matplotlib
+
+3. Run the script:
+   ```bash
+   python main.py
+   ```
+
+📈 Results
+The model generates a visualization to show how closely the predictions match the actual data
