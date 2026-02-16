@@ -1,63 +1,70 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from sklearn.model_selection import train_test_split
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error, r2_score
+from sklearn.preprocessing import LabelEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.metrics import classification_report, confusion_matrix, accuracy_score
 
-def main():
-    # 1. Load data with Pandas
-    try:
-        df = pd.read_csv('Student_Performance.csv')
-        print("Dataset loaded successfully.")
+# 1. LOAD AND PREPROCESS DATA
+# ---------------------------
+# Load the dataset
+df = pd.read_csv('python_learning_exam_performance.csv')
 
-        # 2. Preprocessing
-        # Convert 'Extracurricular Activities' (Yes/No) to binary (1/0)
-        df['Extracurricular Activities'] = df['Extracurricular Activities'].map({'Yes': 1, 'No': 0})
+# Handle missing values in 'prior_programming_experience'
+# Some rows have NaN or "None", we'll treat them as a single category
+df['prior_programming_experience'] = df['prior_programming_experience'].fillna('None')
 
-        # 3. Define Features (X) and Target (y)
-        X = df.drop('Performance Index', axis=1)
-        y = df['Performance Index']
+# Drop student_id as it doesn't help in prediction
+df_model = df.drop('student_id', axis=1)
 
-        # 4. Split data using Scikit-learn
-        X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
+# Encode categorical variables ('country' and 'prior_programming_experience')
+le = LabelEncoder()
+df_model['country'] = le.fit_transform(df_model['country'])
+df_model['prior_programming_experience'] = le.fit_transform(df_model['prior_programming_experience'])
 
-        # 5. Initialize and train the Model
-        model = LinearRegression()
-        model.fit(X_train, y_train)
+# 2. FEATURE SELECTION & SPLITTING
+# --------------------------------
+# Target: passed_exam
+# Features: all columns except passed_exam and final_exam_score (to avoid data leakage)
+X = df_model.drop(['passed_exam', 'final_exam_score'], axis=1)
+y = df_model['passed_exam']
 
-        # 6. Make Predictions
-        y_pred = model.predict(X_test)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
 
-        # 7. Evaluate Model
-        mse = mean_squared_error(y_test, y_pred)
-        r2 = r2_score(y_test, y_pred)
-        print(f"Mean Squared Error: {mse:.2f}")
-        print(f"R-squared Score: {r2:.4f}")
+# 3. MODEL TRAINING (Random Forest)
+# ---------------------------------
+print("Training the Random Forest model...")
+rf_model = RandomForestClassifier(n_estimators=100, random_state=42)
+rf_model.fit(X_train, y_train)
 
-        # 8. Generate and Auto-Save Graph
-        # Plotting Actual vs Predicted values
-        plt.figure(figsize=(10, 6))
-        plt.scatter(y_test, y_pred, color='blue', alpha=0.5, label='Actual vs Predicted')
-        
-        # Draw the 'Perfect Prediction' line
-        max_val = max(y_test.max(), y_pred.max())
-        min_val = min(y_test.min(), y_pred.min())
-        plt.plot([min_val, max_val], [min_val, max_val], color='red', lw=2, label='Perfect Fit')
-        
-        plt.xlabel('Actual Performance Index')
-        plt.ylabel('Predicted Performance Index')
-        plt.title('Student Performance: Actual vs Predicted')
-        plt.legend()
-        plt.grid(True)
-        
-        # Automatic Save
-        graph_name = "student_performance_graph.png"
-        plt.savefig(graph_name)
-        print(f"Graph saved automatically as: {graph_name}")
+# 4. EVALUATION
+# -------------
+y_pred = rf_model.predict(X_test)
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+print("\n--- Model Evaluation ---")
+print(f"Accuracy: {accuracy_score(y_test, y_pred):.4f}")
+print("\nConfusion Matrix:")
+print(confusion_matrix(y_test, y_pred))
+print("\nClassification Report:")
+print(classification_report(y_test, y_pred))
 
-if __name__ == "__main__":
-    main()
+# 5. VISUALIZATIONS
+# -----------------
+# Feature Importance Plot
+plt.figure(figsize=(10, 6))
+importances = rf_model.feature_importances_
+indices = np.argsort(importances)[::-1]
+sns.barplot(x=importances[indices], y=X.columns[indices], palette='viridis')
+plt.title('Key Factors Predicting Exam Success')
+plt.xlabel('Importance Score')
+plt.tight_layout()
+plt.show()
+
+# Correlation Heatmap
+plt.figure(figsize=(12, 10))
+sns.heatmap(df_model.corr(), annot=True, fmt=".2f", cmap='coolwarm')
+plt.title('Feature Correlation Matrix')
+plt.tight_layout()
+plt.show()

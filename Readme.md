@@ -1,40 +1,34 @@
-# 🎓 Student Performance Predictor
+# Student Python Performance Predictor 🎓🐍
 
-This project is part of my **30 Days of Project Building** series. It uses Machine Learning to predict a student's **Performance Index** based on academic and lifestyle habits.
+This project uses Machine Learning to analyze and predict student success in a Python programming course. Using a dataset of 3,000 students, the model identifies key behavioral patterns—like study hours and project completion—that lead to passing the final exam.
 
-## 📝 Project Overview
-The goal of this project is to understand how different factors—like study hours, sleep, and previous scores—impact overall academic achievement. By using a **Linear Regression** model, we can quantify these relationships and predict future performance.
+## 🚀 Overview
+The goal of this project is to provide insights into student learning habits and predict whether a student will pass (`1`) or fail (`0`) the exam using a **Random Forest Classifier**.
 
-## 🚀 Features
-* **Data Cleaning:** Automatically maps categorical data (Extracurricular Activities) to numerical values.
-* **Predictive Analysis:** Uses `Scikit-learn` to train a Linear Regression model.
-* **Accuracy Metrics:** Outputs Mean Squared Error (MSE) and R-squared (R2) scores to the console.
-* **Visual Insights:** Generates a scatter plot comparing Actual vs. Predicted values with a "Perfect Fit" line.
+### Key Features
+* **Data Cleaning**: Handled missing values in programming experience.
+* **Feature Engineering**: Encoded categorical data (Country, Experience) for model compatibility.
+* **Predictive Modeling**: Achieved **~90% accuracy** in predicting exam outcomes.
+* **Data Visualization**: Includes correlation heatmaps and feature importance charts.
 
 ## 🛠️ Tech Stack
 * **Language:** Python
-* **Libraries:** Pandas, NumPy, Scikit-learn, Matplotlib
-* **Environment:** VS Code
+* **Libraries:** Pandas, NumPy, Scikit-Learn
+* **Visualization:** Matplotlib, Seaborn
+* **IDE:** VS Code
 
-## 📊 Dataset Attributes
-The model is trained on the following features:
-1. **Hours Studied**: Total time spent studying.
-2. **Previous Scores**: Marks obtained in previous exams.
-3. **Extracurricular Activities**: Participation in outside activities (Yes/No).
-4. **Sleep Hours**: Average daily sleep duration.
-5. **Sample Papers**: Number of practice papers completed.
-6. **Target**: Performance Index (0-100).
+## 📊 Results & Insights
+Based on the model's feature importance analysis:
+1. **Prior Experience:** The strongest predictor of success.
+2. **Learning Hours:** Weekly consistency is more important than "cramming."
+3. **Project Work:** Hands-on project completion significantly boosts passing probability.
 
-## ⚙️ How to Run
-1. Ensure you have `Student_Performance.csv` in the same folder as `main.py`.
-2. Install the required libraries:
-   ```bash
-   pip install pandas numpy scikit-learn matplotlib
 
-3. Run the script:
-   ```bash
-   python main.py
-   ```
 
-📈 Results
-The model generates a visualization to show how closely the predictions match the actual data
+## 📂 Project Structure
+```text
+├── python_learning_exam_performance.csv  # Dataset
+├── main.py                               # Model training & evaluation script
+├── requirements.txt                      # Dependencies
+└── README.md                             # Project documentation
+
